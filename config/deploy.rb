@@ -4,7 +4,6 @@ lock "~> 3.13.0"
 set :application, "demo-rc-app"
 set :repo_url, "git@github.com:rcchowdam/demo-rc-app.git"
 
-set :user, 'deploy'
 set :branch, :master
 set :deploy_to, '/home/deploy/demo-rc-app'
 set :pty, true
