@@ -6,7 +6,16 @@ jobs:
   build:
     docker:
       - image: circleci/ruby:2.6.3-stretch-node
+        environment:
+          RAILS_ENV: test
+          PGHOST: 127.0.0.1
+          PGUSER: postgres
     executor: ruby/default
+
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: rails-api-test
 
     parallelism: 1
     working_directory: ~/demo-rc-app
@@ -19,3 +28,24 @@ jobs:
             sudo gem update --system
             gem install bundler:2.1.4
             bundle install --jobs=4 --retry=3 --path demo-rc-app/bundle
+
+      - run: sudo apt install -y postgresql-client || true
+
+      - save_cache:
+          paths:
+            - ./demo-rc-app/bundle
+          key: demo-rc-app-v1-dependencies-{{ checksum "Gemfile.lock" }}
+      
+      - run:
+          name: Database Setup
+          command: |
+            bundle exec rake db:create
+            bundle exec rake db:schema:load
+
+      - run:
+          name: Parallel RSpec
+          command: bin/rails test
+
+      # Save artifacts
+      - store_test_results:
+          path: /tmp/test-results
