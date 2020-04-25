@@ -1,5 +1,5 @@
 class TestingAppController < ApplicationController
   def msg
-    render json: { msg: "hello" }
+    render json: { msg: "hello ramesh" }
   end
 end
