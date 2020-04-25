@@ -7,9 +7,15 @@ jobs:
     docker:
       - image: circleci/ruby:2.6.3-stretch-node
     executor: ruby/default
+
+    parallelism: 1
+    working_directory: ~/demo-rc-app
+
     steps:
       - checkout
       - run:
           name: install depencies
-          command: bundle -v
-      - ruby/bundle-install
+          command: |
+            sudo gem update --system
+            gem install bundler:2.1.4
+            bundle install --jobs=4 --retry=3 --path demo-rc-app/bundle
