@@ -57,8 +57,8 @@ jobs:
   upload-coverage:
     docker:
       - image: circleci/ruby:2.6.3-stretch-node
-    environment:
-      CC_TEST_REPORTER_ID: aa1763d3fc3c852be06059c57b0122aa325e320ca5185dc20fdbccc43e4b95df
+#     environment:
+#       CC_TEST_REPORTER_ID: aa1763d3fc3c852be06059c57b0122aa325e320ca5185dc20fdbccc43e4b95df
     working_directory: ~/demo-rc-app
 
     steps:
