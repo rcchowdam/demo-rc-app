@@ -53,23 +53,12 @@ jobs:
       - run:
           name: Code Climate Test Coverage
           command: |
-            ./cc-test-reporter format-coverage -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
-      - persist_to_workspace:
-          root: coverage
-          paths:
-            - codeclimate.*.json
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: test-results
+            ./cc-test-reporter
 
   upload-coverage:
-    environment:
-      CC_TEST_REPORTER_ID: 'd8744bbbdcfe1659dd79e082fe93e3c23d37b4dc20253ba4eb4941f97e6db6d8'
     docker:
-      - image: circleci/ruby:2.5.1
-    working_directory: ~/mind-api
+      - image: circleci/ruby:2.6.3-stretch-node
+    working_directory: ~/demo-rc-app
 
     steps:
       - attach_workspace:
