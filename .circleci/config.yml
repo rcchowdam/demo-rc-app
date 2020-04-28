@@ -87,9 +87,9 @@ workflows:
   build_and_deploy:
     jobs:
       - build
-      - deploy-production:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+      # - deploy-production:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: master

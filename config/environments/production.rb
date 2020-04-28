@@ -104,4 +104,6 @@ Rails.application.configure do
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
   # Rails.application.routes.default_url_options[:host] = 'oula.com'
   # Rails.application.routes.default_url_options[:protocol] = 'https'
+  Rails.application.routes.default_url_options[:host] = 'demo-rc-app.ramesh.com'
+
 end
