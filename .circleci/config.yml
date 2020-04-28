@@ -41,58 +41,62 @@ jobs:
             - ./demo-rc-app/bundle
           key: demo-rc-app-v1-dependencies-{{ checksum "Gemfile.lock" }}
       
-      - run: 
-            name: Set up DB
-            command: |
-              bundle exec rake db:create db:schema:load --trace
-              bundle exec rake db:migrate
-            environment:
-              DATABASE_URL: "postgres://postgres@localhost:5432/rails-api-test"
-
+      # run tests!
       - run:
-          name: Parallel RSpec
-          command: bin/rails test
-
-      # Save artifacts
-      - run:
-          name: Parallel RSpec
+          name: run tests
           command: |
-            echo "my artifact file" > /tmp/artifact-1;
-            mkdir /tmp/artifacts;
-            bin/rails test;
+            ./cc-test-reporter before-build
+            mkdir /tmp/test-results
+            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
+            bundle exec rspec --format progress \
+                            --format RspecJunitFormatter \
+                            --out /tmp/test-results/rspec.xml \
+                            --format progress \
+                            $TEST_FILES
+      #            ./cc-test-reporter after-build --exit-code $?
 
+      - run:
+          name: Code Climate Test Coverage
+          command: |
+            ./cc-test-reporter format-coverage -o "coverage/codeclimate.$CIRCLE_NODE_INDEX.json"
+      - persist_to_workspace:
+          root: coverage
+          paths:
+            - codeclimate.*.json
+      - store_test_results:
+          path: /tmp/test-results
       - store_artifacts:
-          path: /tmp/artifact-1
-          destination: artifact-file
+          path: /tmp/test-results
+          destination: test-results
 
-      - store_artifacts:
-          path: /tmp/artifacts
+  upload-coverage:
+    environment:
+      CC_TEST_REPORTER_ID: 'd8744bbbdcfe1659dd79e082fe93e3c23d37b4dc20253ba4eb4941f97e6db6d8'
+    docker:
+      - image: circleci/ruby:2.5.1
+    working_directory: ~/mind-api
 
-  deploy-production:
-      docker:
-        - image: circleci/ruby:2.6.3-stretch-node
-          environment:
-            RAILS_ENV: prodution
-            BUNDLER_VERSION: 2.1.4
+    steps:
+      - attach_workspace:
+          at: /tmp/coverage
+      - run:
+          name: setup code climate test reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
+          command: |
+            ./cc-test-reporter sum-coverage --output - /tmp/coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
 
-      working_directory: ~/repo
-      steps:
-        - checkout
-        - run:
-            name: install dependencies
-            command: |
-              sudo gem update --system
-              bundle install --jobs=4 --retry=3 --path demo-rc-app/bundle
-
-        - run:
-            name: Deploy to Production server from master branch
-            command: bundle exec cap production deploy
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
       - build
+      - upload-coverage:
+          requires:
+            - build
       # - deploy-production:
       #     requires:
       #       - build
