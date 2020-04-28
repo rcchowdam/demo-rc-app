@@ -18,7 +18,6 @@ jobs:
 
     parallelism: 1
     working_directory: ~/demo-rc-app
-
     steps:
       - checkout
       - run:
