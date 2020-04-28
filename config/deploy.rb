@@ -8,6 +8,8 @@ set :repo_url, "git@github.com:rcchowdam/demo-rc-app.git"
 set :branch, :master
 set :deploy_to, '/home/deploy/demo-rc-app'
 set :pty, true
+set :use_sudo,        false
+set :stage,           :production
 set :linked_files, %w{config/database.yml config/application.yml}
 set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/uploads}
 set :keep_releases, 5
@@ -28,8 +30,7 @@ set :puma_threads, [0, 8]
 set :puma_workers, 0
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true
-set :puma_preload_app, false
-set :puma_restart_command, 'bundle exec puma'
+set :puma_preload_app, true
 
 
 # Default branch is :master
