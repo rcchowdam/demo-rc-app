@@ -71,7 +71,7 @@ jobs:
             chmod +x ./cc-test-reporter
       - run:
           command: |
-            ./cc-test-reporter
+            ./cc-test-reporter upload-coverage --debug --input -
 
 workflows:
   version: 2
