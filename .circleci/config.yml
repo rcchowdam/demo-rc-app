@@ -71,8 +71,7 @@ jobs:
             chmod +x ./cc-test-reporter
       - run:
           command: |
-            ./cc-test-reporter sum-coverage --output - /tmp/coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --debug --input -
-
+            ./cc-test-reporter
 
 workflows:
   version: 2
